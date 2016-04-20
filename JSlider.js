@@ -13,13 +13,14 @@
       'lazyLoad':'false',
       'startSlide':'1'
     }, options);
-
+      checkSettings();
       var $JSlideScrollElement = this.attr("class");
       $JSlideScrollElement = $("."+$JSlideScrollElement);
       var slides = $JSlideScrollElement.html();
       $JSlideScrollElement.addClass("jslider-slider");
       $JSlideScrollElement.html('<div class="jslider-track"></div>');
       $JSlideScrollElement.children('.jslider-track').html(slides);
+      delete(slides);
       var trackWidth=0;
       var slidesCount=0;
       var mxHeight=0;
@@ -45,10 +46,8 @@
       {
         slidesCount-=parseInt(settings.showElements);
       }
-      slidesCount = slidesCount.toFixed();
-      console.log(slidesCount);
+      slidesCount = Math.ceil(slidesCount);
       MomentJSlideScroll(currentSlide);
-
       $("button.prev").click(function(){
         if(settings.infinite=="false")
         {
@@ -76,9 +75,10 @@
         if(settings.infinite=="false")
         {
           currentSlide+=parseInt(settings.scrollElements);
-          console.log(currentSlide);
-          if(currentSlide>slidesCount)
+          if(currentSlide == parseInt(slidesCount)+parseInt(settings.scrollElements))
             currentSlide=0;
+          else if(currentSlide>slidesCount)
+            currentSlide=parseInt(slidesCount);
           JSlideScroll(currentSlide);
         }
         if(settings.infinite=="true")
@@ -97,9 +97,20 @@
       {
         var position = $JSlideScrollElement.children('.jslider-track').children().eq(to_element).position();
         var positionLeft = position.left;
+        console.log(positionLeft);
         position = $JSlideScrollElement.position();
         var trackPosition = position.left;
-        $JSlideScrollElement.children(".jslider-track").animate({left:trackPosition-positionLeft}, parseInt(settings.animSpeed));
+        var to = trackPosition-positionLeft;
+        if(settings.centered=="false")
+        {
+          $JSlideScrollElement.children(".jslider-track").animate({left:to}, parseInt(settings.animSpeed));
+        }
+        else if(settings.centered=="true")
+        {
+          to = to + $JSlideScrollElement.width()/2-($JSlideScrollElement.children('.jslider-track').children('.jslider-slide').width()/2);
+          $JSlideScrollElement.children(".jslider-track").animate({left:to}, parseInt(settings.animSpeed));
+        }
+        delete(to);
       }
 
       function MomentJSlideScroll(to_element)
@@ -108,16 +119,33 @@
         var positionLeft = position.left;
         position = $JSlideScrollElement.position();
         var trackPosition = position.left;
-        $JSlideScrollElement.children(".jslider-track").animate({left:trackPosition-positionLeft}, 0);
+        var to = trackPosition-positionLeft;
+        if(settings.centered=="false")
+        {
+          $JSlideScrollElement.children(".jslider-track").animate({left:to}, 0);
+        }
+        else if(settings.centered=="true")
+        {
+          to = to + $JSlideScrollElement.width()/2-($JSlideScrollElement.children('.jslider-track').children('.jslider-slide').width()/2);
+          $JSlideScrollElement.children(".jslider-track").animate({left:to}, 0);
+        }
+        delete(to);
       }
 
       function JSliderBlockSize()
       {
         $JSlideScrollElement.children('.jslider-track').children('.jslider-slide').css("width",$JSlideScrollElement.width()/settings.showElements+"px");
-        $JSlideScrollElement.children('.jslider-track').css("width",($JSlideScrollElement.width()/settings.showElements)*(slidesCount/settings.rows).toFixed());
-        //$JSlideScrollElement.css("height",parseInt(mxHeight));
+        $JSlideScrollElement.children('.jslider-track').css("width",($JSlideScrollElement.width()/settings.showElements)*Math.ceil(slidesCount/settings.rows));
       }
 
+      function checkSettings()
+      {
+        if(settings.centered=="true")
+        {
+          settings.infinite='true';
+          settings.scrollElements=1;
+        }
+      }
       $(window).resize(function(){
         JSliderBlockSize();
       });
