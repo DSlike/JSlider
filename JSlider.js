@@ -66,6 +66,7 @@
 
     function _JSS_CheckSettings()
     {
+      if(_DefSettings.responsive!=undefined)
       _DefSettings.responsive.forEach(function(element, index){
         if($(window).width()>=_DefSettings.responsive[index].breakpoint)
         {
@@ -134,6 +135,7 @@
         $(element).addClass("jslider-slide");
         slidesCount++;
       });
+      ABSslidesCount=slidesCount;
       if(slidesCount % 2 != 0)
       {
         ABSslidesCount=slidesCount+1;
