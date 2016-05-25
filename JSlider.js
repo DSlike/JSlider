@@ -365,7 +365,6 @@
           currentSlide=zeroSlide;
           JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
         }
-        console.log(currentSlide);
       });
     }
     //when user click "previously" button
