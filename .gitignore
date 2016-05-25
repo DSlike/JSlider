@@ -17,6 +17,15 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#backup
+backup*.*
+
+#JQuery
+jquery*.*
+
+#index
+index.html
+
 # =========================
 # Operating System Files
 # =========================

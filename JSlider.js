@@ -17,7 +17,8 @@
       lazyLoad:false,
       autoPlay:false,
       autoPlaySpeed:1000,
-      variableWidth:false
+      variableWidth:false,
+      turn:'on'
     }, options);
 
     var _JSSettings = {
@@ -35,7 +36,8 @@
       lazyLoad:_DefSettings.lazyLoad,
       autoPlay:_DefSettings.autoPlay,
       autoPlaySpeed:_DefSettings.autoPlaySpeed,
-      variableWidth:_DefSettings.variableWidth
+      variableWidth:_DefSettings.variableWidth,
+      turn:_DefSettings.turn
     }
 
     var $JSlideScrollElement = $(this);
@@ -46,6 +48,7 @@
     var lastSlide = 1;
     var currentSlide = _JSSettings.startSlide;
     var slides = "";
+    var ABSslidesCount = 0;
 
     _JSS_CheckSettings();
     _JSS_Initialization();
@@ -54,7 +57,6 @@
       _JSS_CheckSettings();
       _JSS_Resizing();
       _JSS_ReInitialization();
-      JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
     });
 
     if(_JSSettings.autoPlay==true)
@@ -82,6 +84,7 @@
           if(_DefSettings.responsive[index].settings.autoPlay != undefined) _JSSettings.autoPlay = _DefSettings.responsive[index].settings.autoPlay;
           if(_DefSettings.responsive[index].settings.autoPlaySpeed != undefined) _JSSettings.autoPlaySpeed= _DefSettings.responsive[index].settings.autoPlaySpeed;
           if(_DefSettings.responsive[index].settings.variableWidth != undefined) _JSSettings.variableWidth = _DefSettings.responsive[index].settings.variableWidth;
+          if(_DefSettings.responsive[index].settings.turn != undefined) _JSSettings.turn = _DefSettings.responsive[index].settings.turn;
         }
         else if($(window).width()<_DefSettings.responsive[0].breakpoint)
         {
@@ -100,6 +103,7 @@
           _JSSettings.autoPlay = _DefSettings.autoPlay;
           _JSSettings.autoPlaySpeed= _DefSettings.autoPlaySpeed;
           _JSSettings.variableWidth = _DefSettings.variableWidth;
+          _JSSettings.turn = _DefSettings.turn;
         }
       });
 
@@ -130,7 +134,10 @@
         $(element).addClass("jslider-slide");
         slidesCount++;
       });
-
+      if(slidesCount % 2 != 0)
+      {
+        ABSslidesCount=slidesCount+1;
+      }
       if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
       {
         $(".dots-wrapper").fadeOut();
@@ -171,79 +178,87 @@
 
     function _JSS_ReInitialization()
     {
-      $JSlideScrollElement.html('<div class="jslider-track"></div>');
-      $JSlideTrack = $JSlideScrollElement.children('.jslider-track');
-      $JSlideTrack.html(slides);
-
-      $JSlideTrack.children().each(function(index, element){
-        $(element).addClass("jslider-slide");
-        slidesCount++;
-      });
-
-      if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
+      if(_JSSettings.turn=="on")
       {
-        $(".dots-wrapper").fadeOut();
-        $(_JSSettings.previousButton).fadeOut();
-        $(_JSSettings.nextButton).fadeOut();
-      }
-      else {
-        $(".dots-wrapper").fadeIn();
-        $(_JSSettings.previousButton).fadeIn();
-        $(_JSSettings.nextButton).fadeIn();
-      }
+        $JSlideScrollElement.html('<div class="jslider-track"></div>');
+        $JSlideTrack = $JSlideScrollElement.children('.jslider-track');
+        $JSlideTrack.html(slides);
+        slidesCount=0;
+        $JSlideTrack.children().each(function(index, element){
+          $(element).addClass("jslider-slide");
+          slidesCount++;
+        });
 
-      if(_JSSettings.infinite == true)
-      {
-        var copySlides = $JSlideTrack.html();
-        $JSlideTrack.append(copySlides);
-        $JSlideTrack.prepend(copySlides);
-        copySlides = $JSlideTrack.width();
-      }
-
-      lastSlide = slidesCount - _JSSettings.showElements;
-      lastSlide /= parseInt(_JSSettings.rows);
-      if(_JSSettings.infinite==true)
-      {
-        zeroSlide = slidesCount;
-        lastSlide=slidesCount*2-parseInt(_JSSettings.showElements);
-      }
-      else {
-        zeroSlide=0;
-        lastSlide=slidesCount*2;
-      }
-      $JSlides = $JSlideTrack.children(".jslider-slide");
-      lastSlide = parseInt(lastSlide.toFixed());
-      console.log(lastSlide);
-      console.log(zeroSlide);
-      if(_JSSettings.rows>1)
-        lastSlide--;
-      _JSS_Resizing();
-      if(_JSSettings.infinite==false)
-      {
-        if(currentSlide<=lastSlide)
-          JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
-        else if(currentSlide>lastSlide)
+        if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
         {
-          $JSlideTrack.children().removeClass("JSoft-current");
-          $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+          $(".dots-wrapper").fadeOut();
+          $(_JSSettings.previousButton).fadeOut();
+          $(_JSSettings.nextButton).fadeOut();
         }
-        if(currentSlide == lastSlide+parseInt(_JSSettings.showElements))
-        {
-          currentSlide=zeroSlide;
-          JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+        else {
+          $(".dots-wrapper").fadeIn();
+          $(_JSSettings.previousButton).fadeIn();
+          $(_JSSettings.nextButton).fadeIn();
         }
-      }
-      else if(_JSSettings.infinite==true)
-      {
-        JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
-        if(currentSlide==lastSlide+parseInt(_JSSettings.showElements))
+
+        if(_JSSettings.infinite == true)
         {
-          currentSlide=zeroSlide;
+          var copySlides = $JSlideTrack.html();
+          $JSlideTrack.append(copySlides);
+          $JSlideTrack.prepend(copySlides);
+          copySlides = $JSlideTrack.width();
+        }
+
+        lastSlide = slidesCount - _JSSettings.showElements;
+        lastSlide /= parseInt(_JSSettings.rows);
+        if(_JSSettings.infinite==true)
+        {
+          zeroSlide = slidesCount;
+          lastSlide+=slidesCount;
+          currentSlide+=slidesCount;
+        }
+        $JSlides = $JSlideTrack.children(".jslider-slide");
+        lastSlide = parseInt(lastSlide.toFixed());
+        if(_JSSettings.rows>1)
+          lastSlide--;
+        _JSS_Resizing();
+        if(currentSlide<zeroSlide)
+          currentSlide += slidesCount;
+        else if(currentSlide>=slidesCount)
+          currentSlide -= slidesCount;
+        if(_JSSettings.infinite==false)
+        {
+          if(currentSlide<=lastSlide)
+            JSlideScroll(currentSlide, 0);
+          else if(currentSlide>lastSlide)
+          {
+            JSlideScroll(lastSlide, 0);
+            $JSlideTrack.children().removeClass("JSoft-current");
+            $JSlideTrack.children().eq(currentSlide-1).addClass("JSoft-current");
+          }
+          else if(currentSlide == lastSlide+parseInt(_JSSettings.showElements))
+          {
+            currentSlide=zeroSlide;
+            JSlideScroll(currentSlide, 0);
+          }
+        }
+        else if(_JSSettings.infinite==true)
+        {
           JSlideScroll(currentSlide, 0);
+          if(currentSlide==lastSlide+parseInt(_JSSettings.showElements))
+          {
+            currentSlide=zeroSlide;
+            JSlideScroll(currentSlide, 0);
+          }
         }
+        CreateDots($JSlideScrollElement);
+        $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot").removeClass("current-dot");
+        $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot[data-slide="+currentSlide+"]").addClass("current-dot");
       }
-      //if(_JSSettings.scrollDots==true)
-      //  CreateDots($JSlideScrollElement);
+      else if(_JSSettings.turn=="off")
+      {
+        $JSlideScrollElement.html(slides);
+      }
     }
 
     function _JSS_Resizing()
@@ -252,7 +267,7 @@
       if(_JSSettings.variableWidth==false)
       {
         $JSlides.css("width", $JSlideScrollElement.width() / _JSSettings.showElements);
-        trackWidth = slidesCount * $JSlides.outerWidth();
+        trackWidth = ABSslidesCount * $JSlides.outerWidth();
       }
       else if(_JSSettings.variableWidth==true)
       {
@@ -266,7 +281,8 @@
         trackWidth*=3;
       }
       //for safety )
-      trackWidth+=500;
+      if(_JSSettings.rows==1)
+        trackWidth+=500;
       $JSlideTrack.width(trackWidth);
       delete(trackWidth);
     }
@@ -286,6 +302,8 @@
         to = to + ($JSlideScrollElement.innerWidth()/2)-($JSlideTrack.children().eq(to_element).outerWidth()/2);
       }
       $JSlideTrack.animate({left:to}, parseInt(speed));
+      $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot").removeClass("current-dot");
+      $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot[data-slide="+currentSlide+"]").addClass("current-dot");
       delete(to);
     }
 
@@ -324,47 +342,51 @@
 
     function CreateDots(parrent_element)
     {
-      var dotsCount = Math.ceil((slidesCount)/parseInt(_JSSettings.scrollElements));
+      var dotsCount = Math.ceil((slidesCount/parseInt(_JSSettings.rows))/_JSSettings.scrollElements);
       parrent_element.append("<div class=dots-wrapper></div>");
+      parrent_element.children(".dots-wrapper").empty();
       if(dotsCount>0)
         for(var dot = 0; dot<dotsCount; dot++)
-          parrent_element.children(".dots-wrapper").append("<li data-slide="+dot+"></li>");
-    }
+          parrent_element.children(".dots-wrapper").append("<li class=jslider-dot data-slide="+dot*parseInt(_JSSettings.scrollElements)+" ><button></button</li>");
 
-    //when user click dot
-    $JSlideScrollElement.children(".dots-wrapper").children("li").click(function(){
-      currentSlide = $(this).attr("data-slide");
-      currentSlide = currentSlide*parseInt(_JSSettings.scrollElements);
-      if(currentSlide <= lastSlide)
-        JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
-      else if(currentSlide > lastSlide)
-      {
-        JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-        $JSlideTrack.children().removeClass("JSoft-current");
-        $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
-      }
-      if(currentSlide>=slidesCount/parseInt(_JSSettings.rows))
-      {
-        currentSlide=zeroSlide;
-        JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
-      }
-    });
-    //when user click "prev" button
-    $(_JSSettings.previousButton).click(function(){
-      if(_JSSettings.infinite==false)
-      {
-        currentSlide-=parseInt(_JSSettings.scrollElements);
-        if(currentSlide<zeroSlide)
+      //when user click dot
+      $JSlideScrollElement.children(".dots-wrapper").on('click','.jslider-dot', function(){
+        currentSlide = $(this).attr("data-slide");
+        if(currentSlide <= lastSlide)
+          JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+        else if(currentSlide > lastSlide)
         {
-          currentSlide=slidesCount;
-          JSlideScroll(currentSlide-parseInt(_JSSettings.showElements), parseInt(_JSSettings.animSpeed));
-        }
-        if(currentSlide>lastSlide)
-        {
+          JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
           $JSlideTrack.children().removeClass("JSoft-current");
-          $JSlideTrack.children().eq(currentSlide-1).addClass("JSoft-current");
+          $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
         }
-        else
+        if(currentSlide>=slidesCount/parseInt(_JSSettings.rows))
+        {
+          currentSlide=zeroSlide;
+          JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+        }
+        console.log(currentSlide);
+      });
+    }
+    //when user click "previously" button
+    $(_JSSettings.previousButton).click(function(){
+      currentSlide-=parseInt(_JSSettings.scrollElements);
+      if(_JSSettings.infinite == false)
+      {
+        if(currentSlide < zeroSlide)
+        {
+          currentSlide=lastSlide+_JSSettings.showElements-_JSSettings.scrollElements;
+          JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
+          $JSlideTrack.children().removeClass("JSoft-current");
+          $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+        }
+        else if(currentSlide >= lastSlide)
+        {
+          JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
+          $JSlideTrack.children().removeClass("JSoft-current");
+          $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+        }
+        else if(currentSlide < lastSlide)
         {
           JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
         }
@@ -386,21 +408,23 @@
     });
     // when user click "next" button
     $(_JSSettings.nextButton).click(function(){
+      currentSlide =parseInt(currentSlide) + parseInt(_JSSettings.scrollElements)
       if(_JSSettings.infinite==false)
       {
-        currentSlide += parseInt(_JSSettings.scrollElements);
-        if(currentSlide <= lastSlide)
+        if(currentSlide < lastSlide)
+        {
           JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
-        else if(currentSlide > lastSlide)
+        }
+        else if(currentSlide>=lastSlide)
         {
           JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
           $JSlideTrack.children().removeClass("JSoft-current");
           $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
         }
-        if(currentSlide>=slidesCount/parseInt(_JSSettings.rows))
+        if(currentSlide >= Math.ceil(slidesCount/parseInt(_JSSettings.rows)))
         {
-          currentSlide=zeroSlide;
-          JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+          currentSlide=0;
+          JSlideScroll(zeroSlide, parseInt(_JSSettings.animSpeed));
         }
       }
       else if(_JSSettings.infinite==true)
@@ -414,6 +438,6 @@
         }
       }
     });
-    console.log("Congratulations! The JSlider initialized in " + parseInt(Date.now()-start) + " miliseconds");
+    console.log("%cCongratulations! The JSlider initialized in " + parseInt(Date.now()-start) + " miliseconds",'color:white; background:black; font-weight:bold; padding:5px;');
   };
 })( jQuery );
