@@ -54,7 +54,6 @@
 
     _JSS_CheckSettings();
     _JSS_Initialization();
-
     $(window).resize(function(){
       _JSS_CheckSettings();
       _JSS_ReInitialization();
@@ -70,7 +69,7 @@
       if(_DefSettings.responsive!=undefined)
       {
       _DefSettings.responsive.forEach(function(element, index){
-        if($(window).width()>=_DefSettings.responsive[index].breakpoint)
+        if(parseInt($(window).width()+17)>=_DefSettings.responsive[index].breakpoint)
         {
           if(_DefSettings.responsive[index].settings.showElements != undefined) _JSSettings.showElements = _DefSettings.responsive[index].settings.showElements;
           if(_DefSettings.responsive[index].settings.scrollElements != undefined) _JSSettings.scrollElements = _DefSettings.responsive[index].settings.scrollElements;
@@ -90,7 +89,7 @@
           if(_DefSettings.responsive[index].settings.turn != undefined) _JSSettings.turn = _DefSettings.responsive[index].settings.turn;
           if(_DefSettings.responsive[index].settings.highlightCurrent != undefined) _JSSettings.highlightCurrent = _DefSettings.responsive[index].settings.highlightCurrent;
         }
-        else if($(window).width()<_DefSettings.responsive[0].breakpoint)
+        else if(parseInt($(window).width()+17)<_DefSettings.responsive[0].breakpoint)
         {
           _JSSettings.showElements = _DefSettings.showElements;
           _JSSettings.scrollElements = _DefSettings.scrollElements;
