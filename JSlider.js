@@ -57,7 +57,6 @@
 
     $(window).resize(function(){
       _JSS_CheckSettings();
-      _JSS_Resizing();
       _JSS_ReInitialization();
     });
 
@@ -132,53 +131,56 @@
     function _JSS_Initialization()
     {
       slides = $JSlideScrollElement.html();
-      $JSlideScrollElement.addClass("jsoft-slider");
-      $JSlideScrollElement.html('<div class="jslider-track"></div>');
-      $JSlideTrack = $JSlideScrollElement.children('.jslider-track');
-      $JSlideTrack.html(slides);
+      if(_JSSettings.turn=="on")
+      {
+        $JSlideScrollElement.addClass("jsoft-slider");
+        $JSlideScrollElement.html('<div class="jslider-track"></div>');
+        $JSlideTrack = $JSlideScrollElement.children('.jslider-track');
+        $JSlideTrack.html(slides);
 
-      $JSlideTrack.children().each(function(index, element){
-        $(element).addClass("jslider-slide");
-        slidesCount++;
-      });
-      ABSslidesCount=slidesCount;
-      if(slidesCount % 2 != 0)
-      {
-        ABSslidesCount=slidesCount+1;
-      }
-      if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
-      {
-        $(".dots-wrapper").fadeOut();
-        $(_JSSettings.previousButton).fadeOut();
-        $(_JSSettings.nextButton).fadeOut();
-      }
-      else {
-        $(".dots-wrapper").fadeIn();
-        $(_JSSettings.previousButton).fadeIn();
-        $(_JSSettings.nextButton).fadeIn();
-      }
+        $JSlideTrack.children().each(function(index, element){
+          $(element).addClass("jslider-slide");
+          slidesCount++;
+        });
+        ABSslidesCount=slidesCount;
+        if(slidesCount % 2 != 0)
+        {
+          ABSslidesCount=slidesCount+1;
+        }
+        if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
+        {
+          $(".dots-wrapper").fadeOut();
+          $(_JSSettings.previousButton).fadeOut();
+          $(_JSSettings.nextButton).fadeOut();
+        }
+        else {
+          $(".dots-wrapper").fadeIn();
+          $(_JSSettings.previousButton).fadeIn();
+          $(_JSSettings.nextButton).fadeIn();
+        }
 
-      if(_JSSettings.infinite == true)
-      {
-        var copySlides = $JSlideTrack.html();
-        $JSlideTrack.append(copySlides);
-        $JSlideTrack.prepend(copySlides);
-        copySlides = $JSlideTrack.width();
-      }
+        if(_JSSettings.infinite == true)
+        {
+          var copySlides = $JSlideTrack.html();
+          $JSlideTrack.append(copySlides);
+          $JSlideTrack.prepend(copySlides);
+          copySlides = $JSlideTrack.width();
+        }
 
-      lastSlide = (slidesCount / parseInt(_JSSettings.rows)) - _JSSettings.showElements;
-      if(_JSSettings.infinite==true)
-      {
-        zeroSlide = slidesCount;
-        lastSlide+=slidesCount;
-        currentSlide+=slidesCount;
+        lastSlide = (slidesCount / parseInt(_JSSettings.rows)) - _JSSettings.showElements;
+        if(_JSSettings.infinite==true)
+        {
+          zeroSlide = slidesCount;
+          lastSlide+=slidesCount;
+          currentSlide+=slidesCount;
+        }
+        $JSlides = $JSlideTrack.children(".jslider-slide");
+        lastSlide = Math.floor(lastSlide);
+        _JSS_Resizing();
+        if(_JSSettings.scrollDots==true)
+          CreateDots($JSlideScrollElement);
+        JSlideScroll(currentSlide, 0);
       }
-      $JSlides = $JSlideTrack.children(".jslider-slide");
-      lastSlide = Math.floor(lastSlide);
-      _JSS_Resizing();
-      if(_JSSettings.scrollDots==true)
-        CreateDots($JSlideScrollElement);
-      JSlideScroll(currentSlide, 0);
     }
 
     function _JSS_ReInitialization()
