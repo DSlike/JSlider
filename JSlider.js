@@ -254,7 +254,6 @@
             JSlideScroll(currentSlide, 0);
           }
         }
-        console.log(_JSSettings.scrollDots);
         if(_JSSettings.scrollDots==true)
           CreateDots($JSlideScrollElement);
         $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot").removeClass("current-dot");
@@ -356,7 +355,6 @@
 
     function CreateDots(parrent_element)
     {
-      console.log("1");
       var dotsCount = Math.ceil((slidesCount/parseInt(_JSSettings.rows))/_JSSettings.scrollElements);
       if(_JSSettings.highlightCurrent==false)
         dotsCount-=(_JSSettings.showElements-1);
