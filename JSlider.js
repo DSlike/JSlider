@@ -5,7 +5,7 @@
     var _DefSettings = $.extend( {
       showElements:1,
       scrollElements:1,
-      rows:1,
+      rowsCount:1,
       animSpeed:500,
       infinite:false,
       centered:false,
@@ -25,7 +25,7 @@
     var _JSSettings = {
       showElements:_DefSettings.showElements,
       scrollElements:_DefSettings.scrollElements,
-      rows:_DefSettings.rows,
+      rowsCount:_DefSettings.rowsCount,
       animSpeed:_DefSettings.animSpeed,
       infinite:_DefSettings.infinite,
       centered:_DefSettings.centered,
@@ -73,7 +73,7 @@
         {
           if(_DefSettings.responsive[index].settings.showElements != undefined) _JSSettings.showElements = _DefSettings.responsive[index].settings.showElements;
           if(_DefSettings.responsive[index].settings.scrollElements != undefined) _JSSettings.scrollElements = _DefSettings.responsive[index].settings.scrollElements;
-          if(_DefSettings.responsive[index].settings.rows != undefined) _JSSettings.rows = _DefSettings.responsive[index].settings.rows;
+          if(_DefSettings.responsive[index].settings.rowsCount != undefined) _JSSettings.rowsCount = _DefSettings.responsive[index].settings.rowsCount;
           if(_DefSettings.responsive[index].settings.animSpeed != undefined) _JSSettings.animSpeed = _DefSettings.responsive[index].settings.animSpeed;
           if(_DefSettings.responsive[index].settings.infinite != undefined) _JSSettings.infinite = _DefSettings.responsive[index].settings.infinite;
           if(_DefSettings.responsive[index].settings.centered != undefined) _JSSettings.centered = _DefSettings.responsive[index].settings.centered;
@@ -93,7 +93,7 @@
         {
           _JSSettings.showElements = _DefSettings.showElements;
           _JSSettings.scrollElements = _DefSettings.scrollElements;
-          _JSSettings.rows = _DefSettings.rows;
+          _JSSettings.rowsCount = _DefSettings.rowsCount;
           _JSSettings.animSpeed = _DefSettings.animSpeed;
           _JSSettings.infinite = _DefSettings.infinite;
           _JSSettings.centered = _DefSettings.centered;
@@ -125,6 +125,11 @@
       {
         _JSSettings.scrollDots=false;
       }
+      if(_JSSettings.rowsCount > 1)
+      {
+        _JSSettings.infinite=false;
+        _JSSettings.centered=false;
+      }
     }
 
     function _JSS_Initialization()
@@ -146,7 +151,7 @@
         {
           ABSslidesCount=slidesCount+1;
         }
-        if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
+        if(slidesCount<=_JSSettings.showElements*_JSSettings.rowsCount)
         {
           $(".dots-wrapper").fadeOut();
           $(_JSSettings.previousButton).fadeOut();
@@ -166,7 +171,7 @@
           copySlides = $JSlideTrack.width();
         }
 
-        lastSlide = (slidesCount / parseInt(_JSSettings.rows)) - _JSSettings.showElements;
+        lastSlide = (slidesCount / parseInt(_JSSettings.rowsCount)) - _JSSettings.showElements;
         if(_JSSettings.infinite==true)
         {
           zeroSlide = slidesCount;
@@ -195,7 +200,7 @@
           slidesCount++;
         });
 
-        if(slidesCount<=_JSSettings.showElements*_JSSettings.rows)
+        if(slidesCount<=_JSSettings.showElements*_JSSettings.rowsCount)
         {
           $(".dots-wrapper").fadeOut();
           $(_JSSettings.previousButton).fadeOut();
@@ -215,12 +220,19 @@
           copySlides = $JSlideTrack.width();
         }
 
-        lastSlide = (slidesCount / parseInt(_JSSettings.rows)) - _JSSettings.showElements;
+        lastSlide = (slidesCount / parseInt(_JSSettings.rowsCount)) - _JSSettings.showElements;
         if(_JSSettings.infinite==true)
         {
           zeroSlide = slidesCount;
           lastSlide+=slidesCount;
-          currentSlide+=slidesCount;
+          if(currentSlide<zeroSlide)
+            currentSlide+=slidesCount;
+        }
+        else if(_JSSettings.infinite==false)
+        {
+          zeroSlide = 0;
+          if(currentSlide>lastSlide+_JSSettings.showElements)
+            currentSlide=zeroSlide;
         }
         $JSlides = $JSlideTrack.children(".jslider-slide");
         lastSlide = Math.floor(lastSlide);
@@ -280,12 +292,12 @@
           trackWidth+=$JSlideTrack.children().eq(index).outerWidth();
         });
       }
-      trackWidth/=_JSSettings.rows;
+      trackWidth/=_JSSettings.rowsCount;
       trackWidth = Math.ceil(trackWidth);
       if(_JSSettings.infinite==true)
         trackWidth*=3;
       //for safety :-)
-      if(_JSSettings.rows==1)
+      if(_JSSettings.rowsCount==1)
         trackWidth+=500;
       $JSlideTrack.width(trackWidth);
       delete(trackWidth);
@@ -355,7 +367,7 @@
 
     function CreateDots(parrent_element)
     {
-      var dotsCount = Math.ceil((slidesCount/parseInt(_JSSettings.rows))/_JSSettings.scrollElements);
+      var dotsCount = Math.ceil((slidesCount/parseInt(_JSSettings.rowsCount))/_JSSettings.scrollElements);
       if(_JSSettings.highlightCurrent==false)
         dotsCount-=(_JSSettings.showElements-1);
       parrent_element.append("<div class=dots-wrapper></div>");
@@ -376,7 +388,7 @@
           if(_JSSettings.highlightCurrent==true)
             $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
         }
-        if(currentSlide>=slidesCount/parseInt(_JSSettings.rows))
+        if(currentSlide>=slidesCount/parseInt(_JSSettings.rowsCount))
         {
           currentSlide=zeroSlide;
           JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
@@ -418,7 +430,6 @@
       }
       else if(_JSSettings.infinite==true)
       {
-        currentSlide-=parseInt(_JSSettings.scrollElements);
         if(currentSlide<zeroSlide)
         {
           JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
@@ -459,7 +470,7 @@
             }
           }
         }
-        if(currentSlide >= Math.ceil(slidesCount/parseInt(_JSSettings.rows)))
+        if(currentSlide >= Math.ceil(slidesCount/parseInt(_JSSettings.rowsCount)))
         {
           currentSlide=0;
           JSlideScroll(zeroSlide, parseInt(_JSSettings.animSpeed));
@@ -467,9 +478,8 @@
       }
       else if(_JSSettings.infinite==true)
       {
-        currentSlide+=parseInt(_JSSettings.scrollElements);
         JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
-        if(currentSlide==lastSlide+parseInt(_JSSettings.showElements))
+        if(currentSlide>=lastSlide+parseInt(_JSSettings.showElements))
         {
           currentSlide=zeroSlide;
           JSlideScroll(currentSlide, 0);
