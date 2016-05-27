@@ -272,6 +272,7 @@
       {
         $JSlides.css("width", $JSlideScrollElement.width() / _JSSettings.showElements);
         trackWidth = ABSslidesCount * $JSlides.outerWidth();
+        trackWidth+=10;
       }
       else if(_JSSettings.variableWidth==true)
       {
@@ -280,11 +281,10 @@
         });
       }
       trackWidth/=_JSSettings.rows;
+      trackWidth = Math.ceil(trackWidth);
       if(_JSSettings.infinite==true)
-      {
         trackWidth*=3;
-      }
-      //for safety )
+      //for safety :-)
       if(_JSSettings.rows==1)
         trackWidth+=500;
       $JSlideTrack.width(trackWidth);
