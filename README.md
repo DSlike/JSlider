@@ -2,6 +2,9 @@
 
 > Lihtweight (24kb / 11kb), JQuery plugin for fast and easy make a slideshow on your page. Includes full and min version.
 
+##DEMO
+[demo project on codepen](http://codepen.io/D_Slike/full/JKjaeL/)
+
 ##Using:
 
 ###CDN
@@ -12,6 +15,11 @@ Full version (24kb)
 Min version (11kb)
 ```html
 <script type="text/javascript" src="https://rawgit.com/DSlike/JSlider/master/JSlider.min.js"></script>
+```
+
+CSS file
+```html
+<link rel="stylesheet" href="https://rawgit.com/DSlike/JSlider/master/JSlider.css" />
 ```
 
 ### Connect
@@ -61,7 +69,6 @@ currentSlideClass|'jslider-current'
 previousButton|'.jslider-prev'
 nextButton|'.jslider-next'
 scrollDots|false
-lazyLoad|false
 autoPlay|false
 autoPlaySpeed|1000
 variableWidth|false
