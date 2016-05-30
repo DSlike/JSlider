@@ -10,15 +10,16 @@
       infinite:false,
       centered:false,
       startSlide:1,
-      currentSlideClass:'JSoft-current',
-      previousButton:'.prev',
-      nextButton:'.next',
+      currentSlideClass:'jslider-current',
+      previousButton:'.jslider-prev',
+      nextButton:'.jslider-next',
       scrollDots:false,
       lazyLoad:false,
       autoPlay:false,
       autoPlaySpeed:1000,
       variableWidth:false,
       highlightCurrent:true,
+      touch:true,
       turn:'on'
     }, options);
 
@@ -39,6 +40,7 @@
       autoPlaySpeed:_DefSettings.autoPlaySpeed,
       variableWidth:_DefSettings.variableWidth,
       highlightCurrent:_DefSettings.highlightCurrent,
+      touch:_DefSettings.touch,
       turn:_DefSettings.turn
     }
 
@@ -50,6 +52,7 @@
     var lastSlide = 1;
     var currentSlide = _JSSettings.startSlide;
     var slides = "";
+    var touchX = 0;
     var ABSslidesCount = 0;
 
     _JSS_CheckSettings();
@@ -61,7 +64,7 @@
 
     if(_JSSettings.autoPlay==true)
       setTimeout(function () {
-        JSoftPlay(_JSSettings.autoPlaySpeed);
+        JSliderPlay(_JSSettings.autoPlaySpeed);
     }, parseInt(_JSSettings.autoPlaySpeed));
 
     function _JSS_CheckSettings()
@@ -88,6 +91,7 @@
           if(_DefSettings.responsive[index].settings.variableWidth != undefined) _JSSettings.variableWidth = _DefSettings.responsive[index].settings.variableWidth;
           if(_DefSettings.responsive[index].settings.turn != undefined) _JSSettings.turn = _DefSettings.responsive[index].settings.turn;
           if(_DefSettings.responsive[index].settings.highlightCurrent != undefined) _JSSettings.highlightCurrent = _DefSettings.responsive[index].settings.highlightCurrent;
+          if(_DefSettings.responsive[index].settings.touch != undefined) _JSSettings.touch = _DefSettings.responsive[index].settings.touch;
         }
         else if(parseInt($(window).width()+17)<_DefSettings.responsive[0].breakpoint)
         {
@@ -108,10 +112,15 @@
           _JSSettings.variableWidth = _DefSettings.variableWidth;
           _JSSettings.turn = _DefSettings.turn;
           _JSSettings.highlightCurrent = _DefSettings.highlightCurrent;
+          _JSSettings.touch = _DefSettings.touch;
         }
       });
     }
 
+      if(_JSSettings.touch==true)
+      {
+        _JSSettings.highlightCurrent=false;
+      }
       if(_JSSettings.variableWidth==true)
       {
         _JSSettings.centered=true;
@@ -124,6 +133,7 @@
       if(_JSSettings.infinite==true)
       {
         _JSSettings.scrollDots=false;
+        _JSSettings.highlightCurrent=true;
       }
       if(_JSSettings.rowsCount > 1)
       {
@@ -137,13 +147,14 @@
       slides = $JSlideScrollElement.html();
       if(_JSSettings.turn=="on")
       {
-        $JSlideScrollElement.addClass("jsoft-slider");
+        $JSlideScrollElement.addClass("jslider");
         $JSlideScrollElement.html('<div class="jslider-track"></div>');
         $JSlideTrack = $JSlideScrollElement.children('.jslider-track');
         $JSlideTrack.html(slides);
 
         $JSlideTrack.children().each(function(index, element){
           $(element).addClass("jslider-slide");
+          $(element).attr("data-slide",index);
           slidesCount++;
         });
         ABSslidesCount=slidesCount;
@@ -180,10 +191,14 @@
         }
         $JSlides = $JSlideTrack.children(".jslider-slide");
         lastSlide = Math.floor(lastSlide);
+        if(_JSSettings.centered==true)
+          lastSlide++;
         _JSS_Resizing();
         if(_JSSettings.scrollDots==true)
           CreateDots($JSlideScrollElement);
         JSlideScroll(currentSlide, 0);
+        if(_JSSettings.touch==true)
+          touchUX();
       }
     }
 
@@ -197,6 +212,7 @@
         slidesCount=0;
         $JSlideTrack.children().each(function(index, element){
           $(element).addClass("jslider-slide");
+          $(element).attr("data-slide",index);
           slidesCount++;
         });
 
@@ -236,6 +252,8 @@
         }
         $JSlides = $JSlideTrack.children(".jslider-slide");
         lastSlide = Math.floor(lastSlide);
+        if(_JSSettings.centered==true)
+          lastSlide++;
         _JSS_Resizing();
         if(currentSlide<zeroSlide)
           currentSlide += slidesCount;
@@ -248,8 +266,8 @@
           else if(currentSlide>lastSlide)
           {
             JSlideScroll(lastSlide, 0);
-            $JSlideTrack.children().removeClass("JSoft-current");
-            $JSlideTrack.children().eq(currentSlide-1).addClass("JSoft-current");
+            $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+            $JSlideTrack.children().eq(currentSlide-1).addClass(_JSSettings.currentSlideClass);
           }
           else if(currentSlide == lastSlide+parseInt(_JSSettings.showElements))
           {
@@ -270,6 +288,8 @@
           CreateDots($JSlideScrollElement);
         $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot").removeClass("current-dot");
         $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot[data-slide="+currentSlide+"]").addClass("current-dot");
+        if(_JSSettings.touch==true)
+          touchUX();
       }
       else if(_JSSettings.turn=="off")
       {
@@ -296,7 +316,6 @@
       trackWidth = Math.ceil(trackWidth);
       if(_JSSettings.infinite==true)
         trackWidth*=3;
-      //for safety :-)
       if(_JSSettings.rowsCount==1)
         trackWidth+=500;
       $JSlideTrack.width(trackWidth);
@@ -307,9 +326,9 @@
     {
       to_element = Math.ceil(to_element);
       var position = $JSlideTrack.children().eq(to_element).position();
-      $JSlideTrack.children().removeClass("JSoft-current");
+      $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
       if(_JSSettings.highlightCurrent==true)
-       $JSlideTrack.children().eq(to_element).addClass("JSoft-current");
+       $JSlideTrack.children().eq(to_element).addClass(_JSSettings.currentSlideClass);
       var positionLeft = position.left;
       position = $JSlideScrollElement.position();
       var trackPosition = position.left;
@@ -318,13 +337,14 @@
       {
         to = to + ($JSlideScrollElement.innerWidth()/2)-($JSlideTrack.children().eq(to_element).outerWidth()/2);
       }
+      to-=7;
       $JSlideTrack.animate({left:to}, parseInt(speed));
       $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot").removeClass("current-dot");
       $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot[data-slide="+currentSlide+"]").addClass("current-dot");
       delete(to);
     }
 
-    function JSoftPlay(speed)
+    function JSliderPlay(speed)
     {
       if(_JSSettings.infinite==false)
       {
@@ -335,8 +355,8 @@
         {
           if(_JSSettings.highlightCurrent==true)
           {
-            $JSlideTrack.children().removeClass("JSoft-current");
-            $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+            $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+            $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
           }
           else if(_JSSettings.highlightCurrent==false)
           {
@@ -361,7 +381,7 @@
         }
       }
       setTimeout(function () {
-        JSoftPlay(speed);
+        JSliderPlay(speed);
       }, parseInt(speed));
     }
 
@@ -376,7 +396,6 @@
         for(var dot = 0; dot<dotsCount; dot++)
           parrent_element.children(".dots-wrapper").append("<li class=jslider-dot data-slide="+dot*parseInt(_JSSettings.scrollElements)+" ><button></button</li>");
 
-      //when user click dot
       $JSlideScrollElement.children(".dots-wrapper").on('click','.jslider-dot', function(){
         currentSlide = $(this).attr("data-slide");
         if(currentSlide <= lastSlide)
@@ -384,9 +403,9 @@
         else if(currentSlide > lastSlide)
         {
           JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-          $JSlideTrack.children().removeClass("JSoft-current");
+          $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
           if(_JSSettings.highlightCurrent==true)
-            $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+            $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
         }
         if(currentSlide>=slidesCount/parseInt(_JSSettings.rowsCount))
         {
@@ -395,7 +414,6 @@
         }
       });
     }
-    //when user click "previous" button
     $(_JSSettings.previousButton).click(function(){
       currentSlide-=parseInt(_JSSettings.scrollElements);
       if(_JSSettings.infinite == false)
@@ -406,8 +424,8 @@
           {
             currentSlide=lastSlide+_JSSettings.showElements-_JSSettings.scrollElements;
             JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-            $JSlideTrack.children().removeClass("JSoft-current");
-            $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+            $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+            $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
           }
           else if(_JSSettings.highlightCurrent==false)
           {
@@ -419,9 +437,9 @@
         {
           currentSlide=lastSlide;
           JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-          $JSlideTrack.children().removeClass("JSoft-current");
+          $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
           if(_JSSettings.highlightCurrent==true)
-            $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+            $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
         }
         else if(currentSlide < lastSlide)
         {
@@ -442,7 +460,6 @@
         }
       }
     });
-    // when user click "next" button
     $(_JSSettings.nextButton).click(function(){
       currentSlide =parseInt(currentSlide) + parseInt(_JSSettings.scrollElements);
       if(_JSSettings.infinite==false)
@@ -456,8 +473,8 @@
           if(_JSSettings.highlightCurrent==true)
           {
             JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-            $JSlideTrack.children().removeClass("JSoft-current");
-            $JSlideTrack.children().eq(currentSlide).addClass("JSoft-current");
+            $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+            $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
           }
           else if(_JSSettings.highlightCurrent==false)
           {
@@ -486,6 +503,102 @@
         }
       }
     });
+
+    function touchUX()
+    {
+      var touched=false;
+      var posLeft=0;
+
+      $JSlideTrack.on('mousedown touchstart','div', function(){
+        touchX = event.pageX;
+        if(touchX==undefined)
+          touchX = event.touches[0].pageX;
+        touched=true;
+        var position = $JSlideTrack.position();
+        posLeft = position.left;
+      });
+      $JSlideTrack.on('mousemove touchmove','div', function(){
+        if(touched==true)
+        {
+          tcx = event.pageX;
+          if(tcx==undefined)
+            tcx = event.touches[0].pageX;
+          var scrollLeft = tcx - touchX;
+          scrollTo = posLeft + scrollLeft;
+          $JSlideTrack.animate({left:scrollTo}, 0);
+          slideLimit = $JSlideTrack.children(".jslider-slide").outerWidth();
+          slideLimit = slideLimit;
+          if(scrollLeft>=slideLimit)
+          {
+            currentSlide--;
+            if(currentSlide<zeroSlide)
+            {
+              currentSlide++;
+            }
+            else if(currentSlide>lastSlide)
+            {
+              JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
+              $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+              $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
+            }
+            touchX = event.pageX;
+            if(touchX==undefined)
+              touchX = event.touches[0].pageX;
+            touched=true;
+            var position = $JSlideTrack.position();
+            posLeft = position.left;
+          }
+          else if(scrollLeft<=(1-slideLimit))
+          {
+            if(currentSlide<lastSlide+_JSSettings.showElements-1)
+              currentSlide++;
+            if(currentSlide>lastSlide)
+            {
+              JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
+              $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+              $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
+            }
+            if(currentSlide>parseInt(lastSlide)+parseInt(_JSSettings.showElements))
+            {
+              currentSlide--;
+            }
+            touchX = event.pageX;
+            if(touchX==undefined)
+              touchX = event.touches[0].pageX;
+            touched=false;
+            var position = $JSlideTrack.position();
+            posLeft = position.left;
+          }
+          $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+          $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
+        }
+      });
+      $JSlideTrack.on('mouseup touchend','div', function(){
+        touched=false;
+        if(currentSlide>=lastSlide)
+        {
+          if(_JSSettings.highlightCurrent==true)
+          {
+            JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
+            $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
+            $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
+          }
+          else if(_JSSettings.highlightCurrent==false)
+          {
+            if(currentSlide==lastSlide)
+              JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+            else if(currentSlide>lastSlide)
+            {
+              currentSlide=zeroSlide;
+              JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+            }
+          }
+        }
+        else {
+          JSlideScroll(currentSlide, parseInt(_JSSettings.animSpeed));
+        }
+      });
+    }
     console.log("%cCongratulations! The JSlider initialized in " + parseInt(Date.now()-start) + " miliseconds",'color:white; background:black; font-weight:bold; padding:5px;');
   };
 })( jQuery );

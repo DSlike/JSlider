@@ -5,9 +5,14 @@
   vertical-align: middle;
   transition: .5s;
   float:left;
+  box-shadow: 0px 0px 5px 0px dimgray;
+  padding:1em;
+  -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
 }
-
-.jsoft-slider
+.jslider
 {
   position:relative;
   overflow: hidden;
@@ -23,13 +28,7 @@
   position:relative;
   display: table;
   box-sizing: border-box;
-}
-
-.slide-title
-{
-  font-weight: bold;
-  width:100%;
-  display:block;
+  padding: 1em 0;
 }
 
 .dots-wrapper
@@ -51,15 +50,14 @@
   width:20px;
   height:20px;
   background-color: #eee;
-  box-shadow:0px 1px 4px rgba(50,50,50, .3);
   border-radius:100%;
   transition: .5s;
   border:none;
   margin:0 3px;
   outline: none;
 }
+
 .dots-wrapper .current-dot>button
 {
-  box-shadow:0px 3px 7px rgba(50,50,50, .7),
-              0px 0px 0px 11px rgb(50,50,150) inset;
+  background-color: rgb(50,50,150);
 }
