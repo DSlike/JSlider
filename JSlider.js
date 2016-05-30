@@ -9,7 +9,7 @@
       animSpeed:500,
       infinite:false,
       centered:false,
-      startSlide:1,
+      startSlide:0,
       currentSlideClass:'jslider-current',
       previousButton:'.jslider-prev',
       nextButton:'.jslider-next',
@@ -50,6 +50,7 @@
     var slidesCount = 0;
     var zeroSlide = 0;
     var lastSlide = 1;
+
     var currentSlide = _JSSettings.startSlide;
     var slides = "";
     var touchX = 0;
