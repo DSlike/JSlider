@@ -337,7 +337,6 @@
       {
         to = to + ($JSlideScrollElement.innerWidth()/2)-($JSlideTrack.children().eq(to_element).outerWidth()/2);
       }
-      to-=7;
       $JSlideTrack.animate({left:to}, parseInt(speed));
       $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot").removeClass("current-dot");
       $JSlideScrollElement.children(".dots-wrapper").children(".jslider-dot[data-slide="+currentSlide+"]").addClass("current-dot");
@@ -527,7 +526,7 @@
           scrollTo = posLeft + scrollLeft;
           $JSlideTrack.animate({left:scrollTo}, 0);
           slideLimit = $JSlideTrack.children(".jslider-slide").outerWidth();
-          slideLimit = slideLimit;
+          slideLimit = slideLimit/2;
           if(scrollLeft>=slideLimit)
           {
             currentSlide--;
