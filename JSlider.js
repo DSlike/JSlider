@@ -50,7 +50,7 @@
     var slidesCount = 0;
     var zeroSlide = 0;
     var lastSlide = 1;
-    var currentSlide = _JSSettings.startSlide-1;
+    var currentSlide = _JSSettings.startSlide;
     var slides = "";
     var touchX = 0;
     var ABSslidesCount = 0;
