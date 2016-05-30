@@ -564,7 +564,7 @@
             touchX = event.pageX;
             if(touchX==undefined)
               touchX = event.touches[0].pageX;
-            touched=false;
+            touched=true;
             var position = $JSlideTrack.position();
             posLeft = position.left;
           }
