@@ -334,6 +334,8 @@
       position = $JSlideScrollElement.position();
       var trackPosition = position.left;
       var to = trackPosition-positionLeft;
+      if(currentSlide==zeroSlide)
+        to=0;
       if(_JSSettings.centered==true)
       {
         to = to + ($JSlideScrollElement.innerWidth()/2)-($JSlideTrack.children().eq(to_element).outerWidth()/2);
@@ -508,6 +510,7 @@
     {
       var touched=false;
       var posLeft=0;
+      var slideToggle=0;
 
       $JSlideTrack.on('mousedown touchstart','div', function(){
         touchX = event.pageX;
@@ -516,6 +519,8 @@
         touched=true;
         var position = $JSlideTrack.position();
         posLeft = position.left;
+        posLeft-=48.8;
+        posLeft=Math.floor(posLeft);
       });
       $JSlideTrack.on('mousemove touchmove','div', function(){
         if(touched==true)
@@ -528,46 +533,25 @@
           $JSlideTrack.animate({left:scrollTo}, 0);
           slideLimit = $JSlideTrack.children(".jslider-slide").outerWidth();
           slideLimit = slideLimit/2;
-          if(scrollLeft>=slideLimit)
+          if(Math.floor((Math.abs(scrollLeft)/slideLimit)%2)==1)
           {
-            currentSlide--;
-            if(currentSlide<zeroSlide)
-            {
-              currentSlide++;
-            }
-            else if(currentSlide>lastSlide)
-            {
-              JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-              $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
-              $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
-            }
-            touchX = event.pageX;
-            if(touchX==undefined)
-              touchX = event.touches[0].pageX;
-            touched=true;
-            var position = $JSlideTrack.position();
-            posLeft = position.left;
+            if(slideToggle==0) slideToggle=1;
           }
-          else if(scrollLeft<=(1-slideLimit))
+          else if(Math.floor((Math.abs(scrollLeft)/slideLimit)%2)==0)
           {
-            if(currentSlide<lastSlide+_JSSettings.showElements-1)
-              currentSlide++;
+            slideToggle=0;
+          }
+          if(slideToggle==1)
+          {
+            if(scrollLeft>0)
+                currentSlide--;
+            else if(scrollLeft<0)
+                currentSlide++;
+            if(currentSlide<zeroSlide)
+              currentSlide=zeroSlide;
             if(currentSlide>lastSlide)
-            {
-              JSlideScroll(lastSlide, parseInt(_JSSettings.animSpeed));
-              $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
-              $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);
-            }
-            if(currentSlide>parseInt(lastSlide)+parseInt(_JSSettings.showElements))
-            {
-              currentSlide--;
-            }
-            touchX = event.pageX;
-            if(touchX==undefined)
-              touchX = event.touches[0].pageX;
-            touched=true;
-            var position = $JSlideTrack.position();
-            posLeft = position.left;
+              currentSlide=lastSlide;
+            slideToggle=3;
           }
           $JSlideTrack.children().removeClass(_JSSettings.currentSlideClass);
           $JSlideTrack.children().eq(currentSlide).addClass(_JSSettings.currentSlideClass);

@@ -24,7 +24,7 @@ CSS file
 
 ### Connect
 
-For connect an plugin, just include one of connection strings. Create initializing js file, or write in html file.
+For connect an plugin, just include one of connection strings and css link. Create initializing js file, or write in html file.
 
 ```javascript
 $(document).ready(function(){
