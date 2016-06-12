@@ -336,6 +336,8 @@
       var to = trackPosition-positionLeft;
       if(currentSlide==zeroSlide)
         to=0;
+      if(currentSlide>zeroSlide)
+        to-=11;
       if(_JSSettings.centered==true)
       {
         to = to + ($JSlideScrollElement.innerWidth()/2)-($JSlideTrack.children().eq(to_element).outerWidth()/2);
