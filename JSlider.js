@@ -331,13 +331,9 @@
       if(_JSSettings.highlightCurrent==true)
        $JSlideTrack.children().eq(to_element).addClass(_JSSettings.currentSlideClass);
       var positionLeft = position.left;
-      position = $JSlideScrollElement.position();
-      var trackPosition = position.left;
-      var to = trackPosition-positionLeft;
+      var to = 0 - positionLeft;
       if(currentSlide==zeroSlide)
         to=0;
-      if(currentSlide>zeroSlide)
-        to-=11;
       if(_JSSettings.centered==true)
       {
         to = to + ($JSlideScrollElement.innerWidth()/2)-($JSlideTrack.children().eq(to_element).outerWidth()/2);
