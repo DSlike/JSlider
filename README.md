@@ -1,13 +1,13 @@
-#JSlider V1.0
+# JSlider V1.0
 
 > Lihtweight (24kb / 11kb), JQuery plugin for fast and easy make a slideshow on your page. Includes full and min version.
 
-##DEMO
+## DEMO
 [demo project on codepen](http://codepen.io/D_Slike/full/JKjaeL/)
 
-##Using:
+## Using:
 
-###CDN
+### CDN
 Full version (24kb)
 ```html
 <script type="text/javascript" src="https://rawgit.com/DSlike/JSlider/master/JSlider.min.js"></script>
@@ -32,7 +32,7 @@ $(document).ready(function(){
 });
 ```
 
-##Settings
+## Settings
 This plugin may the few settings:
 
 Value|Explanation
@@ -55,7 +55,7 @@ highlightCurrent|add special "currentSlideClass" to current slides **(true/false
 touch|scrolling by using finger or mouse **(true/false)**
 turn|you can disable plugin or connect it again ('on'/'off')
 
-###Defaults
+### Defaults
 
 Setting|Adjustment
 --- | ---
@@ -77,7 +77,7 @@ highlightCurrent|true
 touch|true
 turn|'on'
 
-###Responsive
+### Responsive
 
 >You can create breakpoints with initializing, for changing some of slider parameters for different screen sizes
 
@@ -106,7 +106,7 @@ $(document).ready(function(){
   });
 });
 ```
-##Fixes
+## Fixes
 
 >For better UX, plugin automatically change some settings
 
