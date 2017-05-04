@@ -56,6 +56,7 @@ touch|scrolling by using finger or mouse **(true/false)**
 turn|you can disable plugin or connect it again ('on'/'off')
 
 ###Defaults
+
 Setting|Adjustment
 --- | ---
 showElements|1
