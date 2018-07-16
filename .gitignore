@@ -23,8 +23,12 @@ backup*.*
 #JQuery
 jquery*.*
 
-#index
+#DEV
 index.html
+style.css
+
+#SASS
+.sass-cache/
 
 # =========================
 # Operating System Files
