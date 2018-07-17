@@ -20,6 +20,9 @@ class JSlider {
       turn: 'on'
     };
 
+    this.touchStart = 0;
+    this.touchEnd = 0;
+
     this._settings = this._defaultSettings;
     this.mainElement = document.getElementById(parentElement);
 
@@ -28,6 +31,7 @@ class JSlider {
     this.currentSlide = this._settings.startSlide - 1;
     this.scrollTo(this._settings.currentSlide);
     this.initControls();
+    this._settings.touch == true && this.initTouchEvents();
   }
   updateSettings(userSettings) {
     if (userSettings)
@@ -61,7 +65,6 @@ class JSlider {
     this.mainElement.style.height = this.trackElement.offsetHeight;
   }
   scrollTo(slideNumber) {
-    console.log(slideNumber);
     this.trackElement.style.left = 0 - this.slideWidth * (slideNumber);
   }
   initControls() {
@@ -91,5 +94,36 @@ class JSlider {
       self.scrollTo(self.currentSlide);
     });
   }
-  
+  initTouchEvents(){
+    for(let i=0; i<this.slidesCount; i++){
+      document.getElementsByClassName('jslider-slide')[i].addEventListener("touchstart", (e) => {
+        this.touchStart = e.touches[0].clientX;
+        this.touch = true;
+      });
+      document.getElementsByClassName('jslider-slide')[i].addEventListener("touchend", (e) => {
+        this.touchEnd = 0;
+        this.touch = false;
+      });
+      document.getElementsByClassName('jslider-slide')[i].addEventListener("touchmove", (e) => {
+        try{
+          if(this.touch == true){
+            this.touchEnd = this.touchStart - e.touches[0].clientX;
+            console.log(Math.abs(this.touchEnd), this.slideWidth/2);
+            if(Math.abs(this.touchEnd) >= this.slideWidth/2){
+              this.touchEnd < 0 ? this.currentSlide-- : this.currentSlide++;
+              this.touch = false;
+            }
+          }
+        } catch (e) {}
+        if(this._settings.infinite == true){
+          if(this.currentSlide < 0) this.currentSlide=this.slidesCount-this._settings.showElements;
+          if(this.currentSlide > this.slidesCount-this._settings.showElements) this.currentSlide=0;
+        } else {
+          if(this.currentSlide < 0) this.currentSlide=0;
+          if(this.currentSlide > this.slidesCount-this._settings.showElements) this.currentSlide=this.slidesCount-this._settings.showElements;
+        }
+        this.scrollTo(this.currentSlide);
+      });
+    }
+  }
 }
