@@ -1,0 +1,11 @@
+.jslider{
+  overflow-x: hidden;
+  position: relative;
+  .jslider-track{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    transition: .3s;
+  }
+}
