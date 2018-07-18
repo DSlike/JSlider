@@ -29,6 +29,15 @@ class JSlider {
     this.prepareHTMLStructure();
     this.currentSlide = this._settings.startSlide - 1;
     this.scrollTo(this.currentSlide);
+    this._settings.autoPlay == true && setInterval((e)=>{
+      if (this._settings.infinite == true)
+        this.currentSlide = this.currentSlide + 1 == this.slidesCount - 1 ?
+        0 : this.currentSlide + 1;
+      else if (this._settings.infinite == false)
+        this.currentSlide = this.currentSlide + 1 >= this.slidesCount - this._settings.showElements ?
+        this.slidesCount - this._settings.showElements : this.currentSlide + 1;
+      this.scrollTo(this.currentSlide);
+    }, this._settings.autoPlaySpeed);
   }
   updateSettings(userSettings) {
     if (userSettings)
