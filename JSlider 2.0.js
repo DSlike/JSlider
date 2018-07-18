@@ -26,9 +26,11 @@ class JSlider {
     this.parentElementName = parentElement;
 
     this.updateSettings(userSettings);
+
     this.prepareHTMLStructure();
     this.currentSlide = this._settings.startSlide - 1;
-    this.scrollTo(this.currentSlide);
+    this.scrollTo();
+
     /* SLIDER AUTOPLAY */
     this._settings.autoPlay && this.initAutoPlay();
   }
@@ -62,10 +64,45 @@ class JSlider {
 
 
   }
+  /* CHECK SLIDE INDEX AND FIX IT */
+  fixSlideIndex(){
+    let index = this.currentSlide;
+    if(index >= 0){
+      if(this._settings.infinite){
+        if(this._settings.centered){
+          if(index > this.slidesCount-1) index = 0;
+        } else {
+          if(index > this.slidesCount - this._settings.showElements)
+            index = 0;
+        }
+      } else {
+        if(this._settings.centered){
+          if(index > this.slidesCount-1)
+            index = this.slidesCount - 1;
+        } else {
+          if(index > this.slidesCount - this._settings.showElements)
+            index = this.slidesCount - this._settings.showElements;
+        }
+      }
+    } else {
+      if(this._settings.infinite){
+        if(this._settings.centered){
+          index = this.slidesCount-1;
+        } else {
+          index = this.slidesCount - this._settings.showElements;
+        }
+      } else {
+        index = 0;
+      }
+    }
+    this.currentSlide = index;
+  }
   /* ADD SCROLL DOTS NEAR SLIDER */
   addScrollDots() {
     let dots = `<div class="jslider-dots">`;
-    const dotsCount = Math.floor(this.slidesCount / this._settings.showElements) * this._settings.showElements;
+    const dotsCount = this._settings.centered == false ?
+    Math.floor(this.slidesCount / this._settings.showElements) * this._settings.showElements :
+    this.slidesCount;
     for (let i = 0; i < dotsCount; i++) {
       dots += `<button class="jslider-dot" data-slide="${i}"></button>`;
     }
@@ -110,30 +147,36 @@ class JSlider {
     }
   }
   /* SCROLL TO SLIDE */
-  scrollTo(slideNumber) {
-    this.trackElement.style.left = 0 - this.slideWidth * (slideNumber);
+  scrollTo() {
+    this.fixSlideIndex();
+    let trackPosition = 0 - this.slideWidth * (this.currentSlide);
+
+    if(this._settings.centered == true){
+      trackPosition = (this.sliderWidth/2) - this.slideWidth * this.currentSlide - this.slideWidth/2;
+    }
+
+    this.trackElement.style.left = trackPosition;
+
     this.spotlightCurrentElements();
-    if(this.currentSlide != slideNumber)
-      this.currentSlide = slideNumber;
+    // if(this.currentSlide != slideNumber)
+    //   this.currentSlide = slideNumber;
   }
   /* DETECT SLIDER SIZE CHANGES*/
   initSliderResizeEvent(){
     const self = this;
     window.addEventListener('resize', (e)=>{
       self.styleElements();
-      self.scrollTo(self.currentSlide);
+      self.scrollTo();
     })
   }
   /* INIT AUTOPLAY EVENT */
   initAutoPlay(){
+    this._settings.isPlaying = true;
     setInterval((e)=>{
-      if (this._settings.infinite == true)
-        this.currentSlide = this.currentSlide + 1 == this.slidesCount - 1 ?
-        0 : this.currentSlide + 1;
-      else if (this._settings.infinite == false)
-        this.currentSlide = this.currentSlide + 1 >= this.slidesCount - this._settings.showElements ?
-        this.slidesCount - this._settings.showElements : this.currentSlide + 1;
-      this.scrollTo(this.currentSlide);
+      if(this._settings.isPlaying == true){
+        this.currentSlide++;
+        this.scrollTo();
+      }
     }, this._settings.autoPlaySpeed);
   }
   /* TOUCH AND CLICK EVENTS */
@@ -143,25 +186,29 @@ class JSlider {
       e.preventDefault();
       e.stopPropagation();
 
-      if (self._settings.infinite == true)
-        self.currentSlide = self.currentSlide - 1 < 0 ?
-        self.slidesCount - this._settings.showElements : self.currentSlide - 1;
-      else if (self._settings.infinite == false)
-        self.currentSlide = self.currentSlide - 1 < 0 ?
-        0 : self.currentSlide - 1;
-      self.scrollTo(self.currentSlide);
+      self.currentSlide--;
+
+      // if (self._settings.infinite == true)
+      //   self.currentSlide = self.currentSlide - 1 < 0 ?
+      //   self.slidesCount - this._settings.showElements : self.currentSlide - 1;
+      // else if (self._settings.infinite == false)
+      //   self.currentSlide = self.currentSlide - 1 < 0 ?
+      //   0 : self.currentSlide - 1;
+      self.scrollTo();
     });
     document.querySelector(self._settings.nextButton).addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      if (self._settings.infinite == true)
-        self.currentSlide = self.currentSlide + 1 == self.slidesCount - 1 ?
-        0 : self.currentSlide + 1;
-      else if (self._settings.infinite == false)
-        self.currentSlide = self.currentSlide + 1 >= self.slidesCount - this._settings.showElements ?
-        self.slidesCount - this._settings.showElements : self.currentSlide + 1;
-      self.scrollTo(self.currentSlide);
+      self.currentSlide++;
+
+      // if (self._settings.infinite == true)
+      //   self.currentSlide = self.currentSlide + 1 > self.slidesCount - 1 ?
+      //   0 : self.currentSlide + 1;
+      // else if (self._settings.infinite == false)
+      //   self.currentSlide = self.currentSlide + 1 >= self.slidesCount - this._settings.showElements ?
+      //   self.slidesCount - this._settings.showElements : self.currentSlide + 1;
+      self.scrollTo();
     });
   }
   initScrollDots() {
@@ -172,7 +219,7 @@ class JSlider {
     [].forEach.call(dots, function(el, i) {
       el.addEventListener("click", (e)=>{
         self.currentSlide = parseInt(e.target.dataset.slide);
-        self.scrollTo(self.currentSlide);
+        self.scrollTo();
       })
     });
   }
@@ -196,19 +243,19 @@ class JSlider {
             }
           }
         } catch (e) {}
-        if (this._settings.infinite == true) {
-          if (this.currentSlide < 0) this.currentSlide = this.slidesCount - this._settings.showElements;
-          if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = 0;
-        } else {
-          if (this.currentSlide < 0) this.currentSlide = 0;
-          if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = this.slidesCount - this._settings.showElements;
-        }
-        this.scrollTo(this.currentSlide);
+        // if (this._settings.infinite == true) {
+        //   if (this.currentSlide < 0) this.currentSlide = this.slidesCount - this._settings.showElements;
+        //   if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = 0;
+        // } else {
+        //   if (this.currentSlide < 0) this.currentSlide = 0;
+        //   if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = this.slidesCount - this._settings.showElements;
+        // }
+        this.scrollTo();
       }, supportsPassive ? { passive: true } : false);
     }
   }
 }
-
+/* CHECK BROWSER SUPPORT FOR PASSIVE EVENT LISTENERS */
 let supportsPassive = false;
 try {
   let opts = Object.defineProperty({}, 'passive', {

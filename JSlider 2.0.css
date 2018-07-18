@@ -1,1 +1,1 @@
-.jslider{overflow-x:hidden;position:relative}.jslider .jslider-track{display:flex;flex-direction:row;flex-wrap:wrap;position:absolute;transition:.3s}.jslider .jslider-dots{position:absolute;bottom:0px;left:50%;transform:translateX(-50%)}
+.jslider{overflow-x:hidden;position:relative}.jslider .jslider-track{display:flex;flex-direction:row;flex-wrap:wrap;position:absolute;transition:.3s}.jslider .jslider-dots{position:absolute;left:50%;transform:translateX(-50%)}
