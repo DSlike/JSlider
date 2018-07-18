@@ -54,7 +54,7 @@ class JSlider {
 
     this.trackElement = this.mainElement.children[0];
     this.slidesCount = this.trackElement.children.length;
-    this.slidesCount = Math.ceil(this.trackElement.children.length/this._settings.rowsCount)
+    this.slidesCount = Math.ceil(this.trackElement.children.length / this._settings.rowsCount)
     this.styleElements();
     this._settings.scrollDots && this.addScrollDots();
     this.initSliderResizeEvent();
@@ -65,29 +65,29 @@ class JSlider {
 
   }
   /* CHECK SLIDE INDEX AND FIX IT */
-  fixSlideIndex(){
+  fixSlideIndex() {
     let index = this.currentSlide;
-    if(index >= 0){
-      if(this._settings.infinite){
-        if(this._settings.centered){
-          if(index > this.slidesCount-1) index = 0;
+    if (index >= 0) {
+      if (this._settings.infinite) {
+        if (this._settings.centered) {
+          if (index > this.slidesCount - 1) index = 0;
         } else {
-          if(index > this.slidesCount - this._settings.showElements)
+          if (index > this.slidesCount - this._settings.showElements)
             index = 0;
         }
       } else {
-        if(this._settings.centered){
-          if(index > this.slidesCount-1)
+        if (this._settings.centered) {
+          if (index > this.slidesCount - 1)
             index = this.slidesCount - 1;
         } else {
-          if(index > this.slidesCount - this._settings.showElements)
+          if (index > this.slidesCount - this._settings.showElements)
             index = this.slidesCount - this._settings.showElements;
         }
       }
     } else {
-      if(this._settings.infinite){
-        if(this._settings.centered){
-          index = this.slidesCount-1;
+      if (this._settings.infinite) {
+        if (this._settings.centered) {
+          index = this.slidesCount - 1;
         } else {
           index = this.slidesCount - this._settings.showElements;
         }
@@ -101,8 +101,8 @@ class JSlider {
   addScrollDots() {
     let dots = `<div class="jslider-dots">`;
     const dotsCount = this._settings.centered == false ?
-    Math.floor(this.slidesCount / this._settings.showElements) * this._settings.showElements :
-    this.slidesCount;
+      Math.floor(this.slidesCount / this._settings.showElements) * this._settings.showElements :
+      this.slidesCount;
     for (let i = 0; i < dotsCount; i++) {
       dots += `<button class="jslider-dot" data-slide="${i}"></button>`;
     }
@@ -117,7 +117,7 @@ class JSlider {
     for (let i = 0; i < this.trackElement.children.length; i++) {
       this.trackElement.children[i].style.width = this.slideWidth;
     }
-    this.trackElement.style.width = Math.ceil(this.trackElement.children.length/this._settings.rowsCount) * this.slideWidth;
+    this.trackElement.style.width = Math.ceil(this.trackElement.children.length / this._settings.rowsCount) * this.slideWidth;
     this.mainElement.style.height = this.trackElement.offsetHeight;
   }
   /* ADD SPOTLIGHT CLASSES TO CURRENT SLIDE AND SCROLLING DOT */
@@ -151,29 +151,27 @@ class JSlider {
     this.fixSlideIndex();
     let trackPosition = 0 - this.slideWidth * (this.currentSlide);
 
-    if(this._settings.centered == true){
-      trackPosition = (this.sliderWidth/2) - this.slideWidth * this.currentSlide - this.slideWidth/2;
+    if (this._settings.centered == true) {
+      trackPosition = (this.sliderWidth / 2) - this.slideWidth * this.currentSlide - this.slideWidth / 2;
     }
 
     this.trackElement.style.left = trackPosition;
 
     this.spotlightCurrentElements();
-    // if(this.currentSlide != slideNumber)
-    //   this.currentSlide = slideNumber;
   }
   /* DETECT SLIDER SIZE CHANGES*/
-  initSliderResizeEvent(){
+  initSliderResizeEvent() {
     const self = this;
-    window.addEventListener('resize', (e)=>{
+    window.addEventListener('resize', (e) => {
       self.styleElements();
       self.scrollTo();
     })
   }
   /* INIT AUTOPLAY EVENT */
-  initAutoPlay(){
+  initAutoPlay() {
     this._settings.isPlaying = true;
-    setInterval((e)=>{
-      if(this._settings.isPlaying == true){
+    setInterval((e) => {
+      if (this._settings.isPlaying == true) {
         this.currentSlide++;
         this.scrollTo();
       }
@@ -187,13 +185,6 @@ class JSlider {
       e.stopPropagation();
 
       self.currentSlide--;
-
-      // if (self._settings.infinite == true)
-      //   self.currentSlide = self.currentSlide - 1 < 0 ?
-      //   self.slidesCount - this._settings.showElements : self.currentSlide - 1;
-      // else if (self._settings.infinite == false)
-      //   self.currentSlide = self.currentSlide - 1 < 0 ?
-      //   0 : self.currentSlide - 1;
       self.scrollTo();
     });
     document.querySelector(self._settings.nextButton).addEventListener("click", (e) => {
@@ -201,13 +192,6 @@ class JSlider {
       e.stopPropagation();
 
       self.currentSlide++;
-
-      // if (self._settings.infinite == true)
-      //   self.currentSlide = self.currentSlide + 1 > self.slidesCount - 1 ?
-      //   0 : self.currentSlide + 1;
-      // else if (self._settings.infinite == false)
-      //   self.currentSlide = self.currentSlide + 1 >= self.slidesCount - this._settings.showElements ?
-      //   self.slidesCount - this._settings.showElements : self.currentSlide + 1;
       self.scrollTo();
     });
   }
@@ -217,7 +201,7 @@ class JSlider {
     let dots = document.querySelectorAll(`${this.parentElementName} .jslider-dot`);
 
     [].forEach.call(dots, function(el, i) {
-      el.addEventListener("click", (e)=>{
+      el.addEventListener("click", (e) => {
         self.currentSlide = parseInt(e.target.dataset.slide);
         self.scrollTo();
       })
@@ -228,11 +212,15 @@ class JSlider {
       document.querySelectorAll('.jslider-slide')[i].addEventListener("touchstart", (e) => {
         this.touchStart = e.touches[0].clientX;
         this.touch = true;
-      }, supportsPassive ? { passive: true } : false);
+      }, supportsPassive ? {
+        passive: true
+      } : false);
       document.querySelectorAll('.jslider-slide')[i].addEventListener("touchend", (e) => {
         this.touchEnd = 0;
         this.touch = false;
-      }, supportsPassive ? { passive: true } : false);
+      }, supportsPassive ? {
+        passive: true
+      } : false);
       document.querySelectorAll('.jslider-slide')[i].addEventListener("touchmove", (e) => {
         try {
           if (this.touch == true) {
@@ -243,15 +231,10 @@ class JSlider {
             }
           }
         } catch (e) {}
-        // if (this._settings.infinite == true) {
-        //   if (this.currentSlide < 0) this.currentSlide = this.slidesCount - this._settings.showElements;
-        //   if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = 0;
-        // } else {
-        //   if (this.currentSlide < 0) this.currentSlide = 0;
-        //   if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = this.slidesCount - this._settings.showElements;
-        // }
         this.scrollTo();
-      }, supportsPassive ? { passive: true } : false);
+      }, supportsPassive ? {
+        passive: true
+      } : false);
     }
   }
 }
