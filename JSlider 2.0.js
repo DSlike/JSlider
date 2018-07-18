@@ -2,22 +2,20 @@ class JSlider {
   constructor(parentElement, userSettings) {
     this._defaultSettings = {
       showElements: 1,
-      scrollElements: 1,
       rowsCount: 1,
       infinite: false,
       centered: false,
-      startSlide: 0,
+      startSlide: 1,
       currentSlideClass: 'jslider-current',
       previousButton: '#jslider-prev',
       nextButton: '#jslider-next',
       scrollDots: false,
-      lazyLoad: false,
       autoPlay: false,
       autoPlaySpeed: 1000,
       variableWidth: false,
       spotlightCurrent: true,
       touch: true,
-      turn: 'on'
+      isPlaying: false
     };
 
     this.touchStart = 0;
@@ -30,7 +28,7 @@ class JSlider {
     this.updateSettings(userSettings);
     this.prepareHTMLStructure();
     this.currentSlide = this._settings.startSlide - 1;
-    this.scrollTo(this._settings.currentSlide);
+    this.scrollTo(this.currentSlide);
   }
   updateSettings(userSettings) {
     if (userSettings)
@@ -52,12 +50,15 @@ class JSlider {
 
     this.trackElement = this.mainElement.children[0];
     this.slidesCount = this.trackElement.children.length;
+    this.slidesCount = Math.ceil(this.trackElement.children.length/this._settings.rowsCount)
     this.styleElements();
     this._settings.scrollDots && this.addScrollDots();
     this.initSliderResizeEvent();
     this.initArrowButtons();
     this._settings.touch == true && this.initTouchEvents();
     this._settings.scrollDots == true && this.initScrollDots();
+
+
   }
   /* ADD SCROLL DOTS NEAR SLIDER */
   addScrollDots() {
@@ -77,7 +78,7 @@ class JSlider {
     for (let i = 0; i < this.trackElement.children.length; i++) {
       this.trackElement.children[i].style.width = this.slideWidth;
     }
-    this.trackElement.style.width = this.trackElement.children.length * this.slideWidth;
+    this.trackElement.style.width = Math.ceil(this.trackElement.children.length/this._settings.rowsCount) * this.slideWidth;
     this.mainElement.style.height = this.trackElement.offsetHeight;
   }
   /* ADD SPOTLIGHT CLASSES TO CURRENT SLIDE AND SCROLLING DOT */
@@ -110,6 +111,8 @@ class JSlider {
   scrollTo(slideNumber) {
     this.trackElement.style.left = 0 - this.slideWidth * (slideNumber);
     this.spotlightCurrentElements();
+    if(this.currentSlide != slideNumber)
+      this.currentSlide = slideNumber;
   }
   /* DETECT SLIDER SIZE CHANGES*/
   initSliderResizeEvent(){
