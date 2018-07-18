@@ -38,6 +38,7 @@ class JSlider {
         this._settings[e] = userSettings[e];
       });
   }
+  /* PREPARE BASIC HTML STRUCTURE FOR SLIDER */
   prepareHTMLStructure() {
     this.mainElement.className += ' jslider';
     for (let i = 0; i < this.mainElement.children.length; i++) {
@@ -53,17 +54,23 @@ class JSlider {
     this.slidesCount = this.trackElement.children.length;
     this.styleElements();
     this._settings.scrollDots && this.addScrollDots();
+    this.initSliderResizeEvent();
+    this.initArrowButtons();
+    this._settings.touch == true && this.initTouchEvents();
+    this._settings.scrollDots == true && this.initScrollDots();
   }
+  /* ADD SCROLL DOTS NEAR SLIDER */
   addScrollDots() {
     let dots = `<div class="jslider-dots">`;
-    const dotsCount = Math.floor(this.slidesCount/this._settings.showElements)*this._settings.showElements;
-    for(let i=0; i<dotsCount; i++){
-      dots += `<button class="jslider-dot" data-id="${i}"></button>`;
+    const dotsCount = Math.floor(this.slidesCount / this._settings.showElements) * this._settings.showElements;
+    for (let i = 0; i < dotsCount; i++) {
+      dots += `<button class="jslider-dot" data-slide="${i}"></button>`;
     }
     dots += '</div>';
-    this.mainElement.innerHTML+=dots;
+    this.mainElement.innerHTML += dots;
     this.trackElement = this.mainElement.children[0];
   }
+  /* SET HEIGHT AND WIDTH OF TRACK AND SLIDER */
   styleElements() {
     this.sliderWidth = this.mainElement.offsetWidth;
     this.slideWidth = this.sliderWidth / this._settings.showElements;
@@ -72,35 +79,48 @@ class JSlider {
     }
     this.trackElement.style.width = this.trackElement.children.length * this.slideWidth;
     this.mainElement.style.height = this.trackElement.offsetHeight;
-    this.initControls();
   }
+  /* ADD SPOTLIGHT CLASSES TO CURRENT SLIDE AND SCROLLING DOT */
+  spotlightCurrentElements() {
+    const self = this;
+
+    /* SCROLLING DOTS */
+    if (this._settings.scrollDots == true) {
+      let dots = document.querySelectorAll(`${this.parentElementName} .jslider-dot`);
+
+      [].forEach.call(dots, function(el, i) {
+        i != self.currentSlide ?
+          el.classList.remove("active") :
+          el.classList.add('active');
+      });
+    }
+
+    /* SPOTLIGHT CURRENT SLIDE */
+    if (this._settings.spotlightCurrent == true) {
+      let slides = document.querySelectorAll(`${this.parentElementName} .jslider-slide`);
+
+      [].forEach.call(slides, function(el, i) {
+        i != self.currentSlide ?
+          el.classList.remove(self._settings.currentSlideClass) :
+          el.classList.add(self._settings.currentSlideClass);
+      });
+    }
+  }
+  /* SCROLL TO SLIDE */
   scrollTo(slideNumber) {
     this.trackElement.style.left = 0 - this.slideWidth * (slideNumber);
     this.spotlightCurrentElements();
   }
-  spotlightCurrentElements(){
+  /* DETECT SLIDER SIZE CHANGES*/
+  initSliderResizeEvent(){
     const self = this;
-
-    /* SCROLLING DOTS */
-    let dots = document.querySelectorAll(`${this.parentElementName} .jslider-dot`);
-
-    [].forEach.call(dots, function(el, i) {
-        i!=self.currentSlide ?
-          el.classList.remove("active") :
-          el.classList.add('active');
-    });
-
-    if(this._settings.spotlightCurrent == true){
-      let slides = document.querySelectorAll(`${this.parentElementName} .jslider-slide`);
-
-      [].forEach.call(slides, function(el, i) {
-          i!=self.currentSlide ?
-            el.classList.remove(self._settings.currentSlideClass) :
-            el.classList.add(self._settings.currentSlideClass);
-      });
-    }
+    window.addEventListener('resize', (e)=>{
+      self.styleElements();
+      self.scrollTo(self.currentSlide);
+    })
   }
-  initControls() {
+  /* TOUCH AND CLICK EVENTS */
+  initArrowButtons() {
     const self = this;
     document.querySelector(self._settings.previousButton).addEventListener("click", (e) => {
       e.preventDefault();
@@ -126,8 +146,18 @@ class JSlider {
         self.slidesCount - this._settings.showElements : self.currentSlide + 1;
       self.scrollTo(self.currentSlide);
     });
+  }
+  initScrollDots() {
+    const self = this;
 
-    this._settings.touch == true && this.initTouchEvents();
+    let dots = document.querySelectorAll(`${this.parentElementName} .jslider-dot`);
+
+    [].forEach.call(dots, function(el, i) {
+      el.addEventListener("click", (e)=>{
+        self.currentSlide = parseInt(e.target.dataset.slide);
+        self.scrollTo(self.currentSlide);
+      })
+    });
   }
   initTouchEvents() {
     for (let i = 0; i < this.slidesCount; i++) {
