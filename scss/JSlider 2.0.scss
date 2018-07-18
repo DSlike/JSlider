@@ -8,4 +8,10 @@
     position: absolute;
     transition: .3s;
   }
+  .jslider-dots{
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
