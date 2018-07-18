@@ -117,7 +117,7 @@ class JSlider {
     for (let i = 0; i < this.trackElement.children.length; i++) {
       this.trackElement.children[i].style.width = this.slideWidth;
     }
-    this.trackElement.style.width = Math.ceil(this.trackElement.children.length / this._settings.rowsCount) * this.slideWidth;
+    this.trackElement.style.width = Math.ceil(this.trackElement.children.length / this._settings.rowsCount) * this.slideWidth + 100;
     this.mainElement.style.height = this.trackElement.offsetHeight;
   }
   /* ADD SPOTLIGHT CLASSES TO CURRENT SLIDE AND SCROLLING DOT */
@@ -143,6 +143,9 @@ class JSlider {
         i != self.currentSlide ?
           el.classList.remove(self._settings.currentSlideClass) :
           el.classList.add(self._settings.currentSlideClass);
+        i != self.currentSlide ?
+          el.classList.remove('active') :
+          el.classList.add('active');
       });
     }
   }
