@@ -29,15 +29,8 @@ class JSlider {
     this.prepareHTMLStructure();
     this.currentSlide = this._settings.startSlide - 1;
     this.scrollTo(this.currentSlide);
-    this._settings.autoPlay == true && setInterval((e)=>{
-      if (this._settings.infinite == true)
-        this.currentSlide = this.currentSlide + 1 == this.slidesCount - 1 ?
-        0 : this.currentSlide + 1;
-      else if (this._settings.infinite == false)
-        this.currentSlide = this.currentSlide + 1 >= this.slidesCount - this._settings.showElements ?
-        this.slidesCount - this._settings.showElements : this.currentSlide + 1;
-      this.scrollTo(this.currentSlide);
-    }, this._settings.autoPlaySpeed);
+    /* SLIDER AUTOPLAY */
+    this._settings.autoPlay && this.initAutoPlay();
   }
   updateSettings(userSettings) {
     if (userSettings)
@@ -131,6 +124,18 @@ class JSlider {
       self.scrollTo(self.currentSlide);
     })
   }
+  /* INIT AUTOPLAY EVENT */
+  initAutoPlay(){
+    setInterval((e)=>{
+      if (this._settings.infinite == true)
+        this.currentSlide = this.currentSlide + 1 == this.slidesCount - 1 ?
+        0 : this.currentSlide + 1;
+      else if (this._settings.infinite == false)
+        this.currentSlide = this.currentSlide + 1 >= this.slidesCount - this._settings.showElements ?
+        this.slidesCount - this._settings.showElements : this.currentSlide + 1;
+      this.scrollTo(this.currentSlide);
+    }, this._settings.autoPlaySpeed);
+  }
   /* TOUCH AND CLICK EVENTS */
   initArrowButtons() {
     const self = this;
@@ -176,11 +181,11 @@ class JSlider {
       document.querySelectorAll('.jslider-slide')[i].addEventListener("touchstart", (e) => {
         this.touchStart = e.touches[0].clientX;
         this.touch = true;
-      });
+      }, supportsPassive ? { passive: true } : false);
       document.querySelectorAll('.jslider-slide')[i].addEventListener("touchend", (e) => {
         this.touchEnd = 0;
         this.touch = false;
-      });
+      }, supportsPassive ? { passive: true } : false);
       document.querySelectorAll('.jslider-slide')[i].addEventListener("touchmove", (e) => {
         try {
           if (this.touch == true) {
@@ -199,7 +204,18 @@ class JSlider {
           if (this.currentSlide > this.slidesCount - this._settings.showElements) this.currentSlide = this.slidesCount - this._settings.showElements;
         }
         this.scrollTo(this.currentSlide);
-      });
+      }, supportsPassive ? { passive: true } : false);
     }
   }
 }
+
+let supportsPassive = false;
+try {
+  let opts = Object.defineProperty({}, 'passive', {
+    get: function() {
+      supportsPassive = true;
+    }
+  });
+  window.addEventListener("testPassive", null, opts);
+  window.removeEventListener("testPassive", null, opts);
+} catch (e) {}
