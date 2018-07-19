@@ -253,3 +253,6 @@ try {
   window.addEventListener("testPassive", null, opts);
   window.removeEventListener("testPassive", null, opts);
 } catch (e) {}
+
+// Copyright Daniel Votintsev 2018
+// https://github.com/DSlike/JSlider
