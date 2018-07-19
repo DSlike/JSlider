@@ -19,6 +19,7 @@ $RECYCLE.BIN/
 
 #backup
 backup*.*
+backup/
 
 #JQuery
 jquery*.*
@@ -26,6 +27,7 @@ jquery*.*
 #DEV
 index.html
 style.css
+minify.jslider.js
 
 #SASS
 .sass-cache/
